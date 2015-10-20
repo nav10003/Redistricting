@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>MetroMerger</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Load jQuery from Google CDN-->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<!-- Load Leaflet from CDN-->
+	<script src="http://cdn.jsdelivr.net/leaflet/0.7.3/leaflet.js"></script>
+	<link rel="stylesheet" href="http://cdn.jsdelivr.net/leaflet/0.7.3/leaflet.css" />
+	<!-- Load data.js (town polygons) and css from local directory -->
+	<script type="text/javascript" src="data.js"></script>
+	<link rel="stylesheet" href="style.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	<script>
+	$(function() {
+		$("#accordion").accordion({
+		  heightStyle: "content"
+		});
+	});
+	</script>
+	<style>
+	.towns_list {
+		height:170px;
+		overflow:auto;
+	}
+
+	.merged_stats {
+		height:420px;
+	}
+
+	#accordion .ui-accordion-content { padding: 15px;}
+	</style>
+</head>
+<<<<<<< HEAD
+<body style='font: 14px/16px Arial, Helvetica, sans-serif'>
+	<div id="map" style="position:absolute;top:0px;left:0px;"></div>
+
+	<div id="accordion" style="position:absolute;top:1%;right:1%;width:23%;font: 14px/16px Arial, Helvetica, sans-serif">
+	  <h3 id="district1_title">District 1</h3>
+	  <div>
+		<div id="district1_text" class="merged_stats">No towns selected</div>
+		<ul id="district1_list" class="towns_list"></ul>
+	  </div>
+	  <h3 id="district2_title">District 2</h3>
+	  <div>
+		<div id="district2_text" class="merged_stats">No towns selected</div>
+		<ul id="district2_list" class="towns_list"></ul>
+	  </div>
+	  <h3 id="district3_title">District 3</h3>
+	  <div>
+		<div id="district3_text" class="merged_stats">No towns selected</div>
+		<ul id="district3_list" class="towns_list"></ul>
+	  </div>
+	  <h3 id="district4_title">District 4</h3>
+	  <div>
+		<div id="district4_text" class="merged_stats">No towns selected</div>
+		<ul id="district4_list" class="towns_list"></ul>
+	  </div>
+	  <h3 id="district5_title">District 5</h3>
+	  <div>
+		<div id="district5_text" class="merged_stats">No towns selected</div>
+		<ul id="district5_list" class="towns_list"></ul>
+	  </div>
+	</div>
+	<br />
+	<a href='javascript:export_csv()' style='position:absolute;top:20px;left:70px;'>Export to text file</a>
+
+<script type="text/javascript">
+
+	var map = L.map('map',{doubleClickZoom: false}).setView([41.5, -72.67], 9);
+=======
+<body>
+	<div id="map"></div>
+	<form id = "districts">
+	<input type="radio" name="District" id="D1"/>District 1<br>
+	<input type="radio" name="District" id="D2"/>District 2<br>
+	<input type="radio" name="District" id="D3"/>District 3<br>
+	<input type="radio" name="District" id="D4"/>District 4<br>
+	<input type="radio" name="District" id="D5"/>District 5<br>
+	</form>
+	<p id="district1"></p>
+	<p id="district2"></p>
+	<p id="district3"></p>
+	<p id="district4"></p>
+	<p id="district5"></p>
+ 
+	</input>
+	</form>
+
+<script type="text/javascript">
+    var map = L.map('map',{doubleClickZoom: false}).setView([41.5, -72.67], 9);
+>>>>>>> origin/master
+	// customize source link to your GitHub repo
+	map.attributionControl
+	.setPrefix('<a href="http://magic.lib.uconn.edu/">MAGIC</a>  created with <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
+	new L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	}).addTo(map);
+	var geojson;
+	var totalPop = 0;
+	var totalIncome = 0;
+	var totalTaxable = 0;
+	var metroPerCapIncome = 0;
+	var metroPerCapTaxable = 0;
+<<<<<<< HEAD
+
+	var vr_r_10 = 0; // Voters Registered as Republicans in 2010
+	var vr_d_10 = 0; // Voters Registered as Democrats in 2010
+	var vr_un_10 = 0; // Voters Registered as Unaffiliated in 2010
+	var vr_rp_10 = 0; // Voters Registered as Republicans (Percent) in 2010 -- Calculate on our own
+	var vr_dp_10 = 0; // Voters Registered as Democrats (Percent) in 2010 -- Calculate on our own
+	var vr_unp_10 = 0; // Voters Registered as Unaffiliated (Percent) in 2010 -- Calculate on our own
+	var vr_nr_10 = 0; // Voters Registered (Net) as Republicans in 2010
+	var vr_nrp_10 = 0; // Voters Registered (Net) as Republicans (Percent) in 2010 -- Calculate on our own
+	var vr_tot_10 = 0; // Voters Registered (Total) in 2010
+
+	var g_r_10 = 0; // Gubernatorial Votes for the Republican in 2010
+	var g_d_10 = 0; // Gubernatorial Votes for the Democrat in 2010
+	var g_rp_10 = 0; // Gubernatorial Votes for the Republican (Percent) in 2010 -- Calculate on our own
+	var g_dp_10 = 0; // Gubernatorial Votes for the Democrat (Percent) in 2010 -- Calculate on our own
+	var g_nr_10 = 0; // Gubernatorial Votes (Net) for the Republican in 2010
+	var g_nrp_10 = 0; // Gubernatorial Votes (Net) for the Republican (Percent) in 2010 -- Calculate on our own
+	var g_tot_10 = 0; // Gubernatorial Vote (Total) in 2010
+
+	var pop_18 = 0; // Population 18 years and over: Total (2010 Census)
+	var black_18 = 0; // Population of one race: Black or African American 18 years or older (2010 Census)
+	var hisp_18 = 0; // Population of one ethnicity: Hispanic 18 years or older (2010 Census)
+	var white_18 = 0; // Voting Age White Population (2010 Census)
+	var non_w_18 = 0; // Voting Age Non-White Population (2010 Census)
+	var non_w_18p = 0; // Voting Age Non-White Population (Percent) in 2010
+
+
+
+	// style the initial map in gray tone
+	function style(feature) {
+		return {
+			fillColor: 'gray',
+			weight: 2,
+			opacity: 1,
+			color: 'white',
+			dashArray: '3',
+			fillOpacity: 0.5
+		};
+	}
+	// display data when hovering
+	function highlightFeature(e) {
+		var layer = e.target;
+		info.update(layer.feature.properties);
+	}
+
+
+	var poly_colors = ["green", "orange", "red", "blue", "violet"];
+	var towns = [ [], [], [], [], [] ];
+	var i;
+
+	function export_csv() { // NEED TO ADD NUMBER OF NEW VARIABLES
+		var csvContent="data:text/plain;charset=utf-8,";
+		for (var i=0;i<5;i++) {
+			csvContent+="Discrict "+(i+1)+":\r\n";
+			csvContent+=update_list(i,1);
+			csvContent+="\r\n\r\n\r\n";
+		}
+
+		var encodedUri = encodeURI(csvContent);
+		var link = document.createElement("a");
+		link.setAttribute("href", encodedUri);
+		link.setAttribute("download", "MetroMerger.txt");
+
+		link.click();
+	}
+
+	for (key in poly_colors) {
+		var index_for_text=parseInt(key)+1;
+		$("#district"+index_for_text+"_title").css("color",poly_colors[key]);
+	}
+
+
+	function update_list(district,for_export) { // NEED TO UPDATE FOR NEW VARIABLES
+		var district_text="";
+		var total_people=0;
+		
+		
+		var VR_R_10 = 0;
+		var VR_D_10 = 0;
+		var VR_Un_10 = 0;
+		var VR_nR_10 = 0;
+		var VR_tot_10 = 0;
+		var G_R_10 = 0;
+		var G_D_10 = 0;
+		var G_nR_10 = 0;
+		var G_tot_10 = 0;
+		var Pop_18 = 0;
+		var Black_18 = 0;
+		var Hisp_18 = 0;
+		var White_18 = 0;
+		var Non_W_18 = 0;
+		
+		
+		var index_for_text=district+1;
+		var towns_present=0;
+
+		for (key in towns[district]) {
+			if (for_export) {
+				district_text+="- "+towns[district][key][0]+"\r\n";
+			} else {
+				district_text+="<li>"+towns[district][key][0]+"</li>";
+			}
+			total_people+=towns[district][key][1];
+			
+			VR_tot_10 += towns[district][key][2];
+			VR_R_10 += towns[district][key][3];;
+			VR_D_10 += towns[district][key][4];;
+			VR_Un_10 += towns[district][key][5];;
+			VR_nR_10 += towns[district][key][6];
+			
+			G_tot_10 += towns[district][key][7];
+			G_R_10 += towns[district][key][8];
+			G_D_10 += towns[district][key][9];
+			G_nR_10 += towns[district][key][10];
+			
+			Pop_18 += towns[district][key][11];
+			Black_18 += towns[district][key][12];
+			Hisp_18 += towns[district][key][13];
+			White_18 += towns[district][key][14];
+			Non_W_18 += towns[district][key][15];
+			//income_pc+=towns[district][key][2]; // DELETE
+			//taxable_pc+=towns[district][key][3]; // DELETE
+
+			towns_present=1;
+		}
+		var VR_Rp_10 = Number(100*VR_R_10/VR_tot_10).toFixed(2);
+		var VR_Dp_10 = Number(100*VR_D_10/VR_tot_10).toFixed(2);
+		var VR_UnP_10 = Number(100*VR_Un_10/VR_tot_10).toFixed(2);
+		var VR_nRp_10 = Number(100*VR_nR_10/VR_tot_10).toFixed(2);
+		var G_Rp_10 = Number(100*G_R_10/G_tot_10).toFixed(2);
+		var G_Dp_10 = Number(100*G_D_10/G_tot_10).toFixed(2);
+		var G_nRp_10 = Number(100*G_nR_10/G_tot_10).toFixed(2);
+		var Non_W_18p = Number(100*Non_W_18/Pop_18).toFixed(2);
+
+		if (for_export) {
+			var ret=numberWithCommas(checkNull(total_people,false))+" People\r\n$"+
+							numberWithCommas(checkNull(VR_tot_10,false))+" Voters Registered\r\n"+
+							numberWithCommas(checkNull(VR_R_10,false))+" Republicans\r\n"+
+							numberWithCommas(checkNull(VR_D_10,false))+" Democrats\r\n"+
+							numberWithCommas(checkNull(VR_Un_10,false))+" Unaffiliated\r\n"+
+							numberWithCommas(checkNull(VR_nR_10,false))+" Net Republicans\r\n"+
+							numberWithCommas(checkNull(VR_Rp_10,false))+" % Republicans\r\n"+
+							numberWithCommas(checkNull(VR_Dp_10,false))+" % Democrats\r\n"+
+							numberWithCommas(checkNull(VR_UnP_10,false))+" % Unaffiliated\r\n"+
+							numberWithCommas(checkNull(VR_nRp_10,false))+" % Net Republicans\r\n"+
+							numberWithCommas(checkNull(G_tot_10,false))+" Gubernatorial Votes\r\n"+
+							numberWithCommas(checkNull(G_R_10,false))+" Gubernatorial Republicans\r\n"+
+							numberWithCommas(checkNull(G_D_10,false))+" Gubernatorial Democrats\r\n"+
+							numberWithCommas(checkNull(G_nR_10,false))+" Gubernatorial Net Republicans\r\n"+
+							numberWithCommas(checkNull(G_Rp_10,false))+" % Gubernatorial Republicans\r\n"+
+							numberWithCommas(checkNull(G_Dp_10,false))+" % Gubernatorial Democrats\r\n"+
+							numberWithCommas(checkNull(G_nRp_10,false))+" % Gubernatorial Net Republicans\r\n"+
+							numberWithCommas(checkNull(Pop_18,false))+" People 18 years and over\r\n"+
+							numberWithCommas(checkNull(Black_18,false))+" Black or African American\r\n"+
+							numberWithCommas(checkNull(Hisp_18,false))+" Hispanic\r\n"+
+							numberWithCommas(checkNull(White_18,false))+" White\r\n"+
+							numberWithCommas(checkNull(VR_tot_10,false))+" Non-White\r\n"+
+							numberWithCommas(checkNull(Non_W_18,false))+" % Non-White\r\n\r\n"+district_text;
+			return ret;
+		} else {
+			if (towns_present) {
+				$("#district"+index_for_text+"_text").html(comma(checkNull(total_people,false))+" people<br />"+
+				
+															numberWithCommas(checkNull(VR_tot_10,false))+" Voters Registered<br />"+
+															numberWithCommas(checkNull(VR_R_10,false))+" Republicans<br />"+
+															numberWithCommas(checkNull(VR_D_10,false))+" Democrats<br />"+
+															numberWithCommas(checkNull(VR_Un_10,false))+" Unaffiliated<br />"+
+															numberWithCommas(checkNull(VR_nR_10,false))+" Net Republicans<br />"+
+															numberWithCommas(checkNull(VR_Rp_10,false))+" % Republicans<br />"+
+															numberWithCommas(checkNull(VR_Dp_10,false))+" % Democrats<br />"+
+															numberWithCommas(checkNull(VR_UnP_10,false))+" % Unaffiliated<br />"+
+															numberWithCommas(checkNull(VR_nRp_10,false))+" % Net Republicans<br />"+
+															numberWithCommas(checkNull(G_tot_10,false))+" Gubernat. Votes<br />"+
+															numberWithCommas(checkNull(G_R_10,false))+" Gubernat. Republicans<br />"+
+															numberWithCommas(checkNull(G_D_10,false))+" Gubernat. Democrats<br />"+
+															numberWithCommas(checkNull(G_nR_10,false))+" Gubernat. Net Republicans<br />"+
+															numberWithCommas(checkNull(G_Rp_10,false))+" % Gubernat. Republicans<br />"+
+															numberWithCommas(checkNull(G_Dp_10,false))+" % Gubernat. Democrats<br />"+
+															numberWithCommas(checkNull(G_nRp_10,false))+" % Gubernat. Net Republicans<br />"+
+															numberWithCommas(checkNull(Pop_18,false))+" People 18 years and over<br />"+
+															numberWithCommas(checkNull(Black_18,false))+" Black or African American<br />"+
+															numberWithCommas(checkNull(Hisp_18,false))+" Hispanic<br />"+
+															numberWithCommas(checkNull(White_18,false))+" White<br />"+
+															numberWithCommas(checkNull(VR_tot_10,false))+" Non-White<br />"+
+															numberWithCommas(checkNull(Non_W_18,false))+ " % Non-White");
+															
+			} else {
+				$("#district"+index_for_text+"_text").html("No towns selected");
+			}
+			$("#district"+index_for_text+"_list").html(district_text);
+		}
+	}
+
+	function chooseFeature(e) {
+		var layer = e.target;
+		var selected_disctict_num = $("#accordion").accordion("option", "active");
+		var town_id = parseInt(layer._leaflet_id);
+
+		if (layer.feature.properties.district==undefined) { // not selected region
+			layer.setStyle({
+				fillColor: poly_colors[selected_disctict_num],
+				fillOpacity: 0.7
+			});
+			layer.feature.properties.district = selected_disctict_num;
+
+			towns[selected_disctict_num][town_id] = [layer.feature.properties.Town, 
+													layer.feature.properties.Total_pop,layer.feature.properties.VR_tot_10,
+													layer.feature.properties.VR_R_10, layer.feature.properties.VR_D_10, 
+													layer.feature.properties.VR_Un_10, layer.feature.properties.VR_nR_10,
+													layer.feature.properties.G_tot_10, layer.feature.properties.G_R_10,
+													layer.feature.properties.G_D_10, layer.feature.properties.G_nR_10, 
+													layer.feature.properties.Pop_18, layer.feature.properties.Black_18, 
+													layer.feature.properties.Hisp_18, layer.feature.properties.White_18, 
+													layer.feature.properties.Non_W_18,];
+			update_list(selected_disctict_num);
+		} else if (layer.feature.properties.district == selected_disctict_num) { // deselect region
+			layer.setStyle({
+				fillColor: 'gray',
+				fillOpacity: 0.5
+			});
+			layer.feature.properties.district = undefined;
+
+			delete(towns[selected_disctict_num][town_id]);
+			update_list(selected_disctict_num);
+		} else { // switch region to another district
+			layer.setStyle({
+				fillColor: poly_colors[selected_disctict_num],
+				fillOpacity: 0.7
+			});
+
+			delete(towns[layer.feature.properties.district][town_id]);
+			towns[selected_disctict_num][town_id] = [layer.feature.properties.Town, 
+													layer.feature.properties.Total_pop,layer.feature.properties.VR_tot_10,
+													layer.feature.properties.VR_R_10, layer.feature.properties.VR_D_10, 
+													layer.feature.properties.VR_Un_10, layer.feature.properties.VR_nR_10,
+													layer.feature.properties.G_tot_10, layer.feature.properties.G_R_10,
+													layer.feature.properties.G_D_10, layer.feature.properties.G_nR_10, 
+													layer.feature.properties.Pop_18, layer.feature.properties.Black_18, 
+													layer.feature.properties.Hisp_18, layer.feature.properties.White_18, 
+													layer.feature.properties.Non_W_18,];
+
+			update_list(layer.feature.properties.district);
+			update_list(selected_disctict_num);
+
+			layer.feature.properties.district = selected_disctict_num;
+		}
+
+		// updates display
+		info.update(layer.feature.properties);
+	}
+
+	// create ability to clear selections
+	function resetFeature(e){
+		geojson.resetStyle(e.target);
+		totalPop -= layer.feature.properties.Total_pop;
+		
+		totalIncome -= layer.feature.properties.VR_R_10;
+		totalTaxable -= layer.feature.properties.VR_D_10;
+		metroPerCapIncome = totalIncome/totalPop;
+		metroPerCapTaxable = totalTaxable/totalPop;
+		
+		vr_r_10 -= layer.feature.properties.VR_R_10; // Voters Registered as Republicans in 2010
+		vr_d_10 -= layer.feature.properties.VR_D_10; // Voters Registered as Democrats in 2010
+		vr_un_10 -= layer.feature.properties.VR_Un_10; // Voters Registered as Unaffiliated in 2010
+		vr_nr_10 -= layer.feature.properties.VR_nR_10; // Voters Registered (Net) as Republicans in 2010
+		vr_tot_10 -= layer.feature.properties.VR_tot_10; // Voters Registered (Total) in 2010
+		vr_rp_10 = 100*vr_r_10/vr_tot_10; // Voters Registered as Republicans (Percent) in 2010
+		vr_dp_10 = 100*vr_d_10/vr_tot_10; // Voters Registered as Democrats (Percent) in 2010
+		vr_unp_10 = 100*vr_un_10/vr_tot_10; // Voters Registered as Unaffiliated (Percent) in 2010
+		vr_nrp_10 = 100*vr_nr_10/vr_tot_10; // Voters Registered (Net) as Republicans (Percent) in 2010
+
+		g_r_10 -= layer.feature.properties.G_R_10; // Gubernatorial Votes for the Republican in 2010
+		g_d_10 -= layer.feature.properties.G_D_10; // Gubernatorial Votes for the Democrat in 2010
+		g_nr_10 -= layer.feature.properties.G_nR_10; // Gubernatorial Votes (Net) for the Republican in 2010
+		g_tot_10 -= layer.feature.properties.G_tot_10; // Gubernatorial Vote (Total) in 2010
+		g_rp_10 = 100*g_r_10/g_tot_10; // Gubernatorial Votes for the Republican (Percent) in 2010
+		g_dp_10 = 100*g_d_10/g_tot_10; // Gubernatorial Votes for the Democrat (Percent) in 2010
+		g_nrp_10 = 100*g_nr_10/g_tot_10; // Gubernatorial Votes (Net) for the Republican (Percent) in 2010
+		
+		pop_18 -= layer.feature.properties.Pop_18; // Population 18 years and over: Total (2010 Census)
+		black_18 -= layer.feature.properties.Black_18; // Population of one race: Black or African American 18 years or older (2010 Census)
+		hisp_18 -= layer.feature.properties.Hisp_18; // Population of one ethnicity: Hispanic 18 years or older (2010 Census)
+		white_18 -= layer.feature.properties.White_18; // Voting Age White Population (2010 Census)
+		non_w_18 -= layer.feature.properties.Non_W_18; // Voting Age Non-White Population (2010 Census)
+		non_w_18p = 100*non_w_18/pop_18; // Voting Age Non-White Population (Percent) in 2010
+		
+=======
+	// style the initial map in gray tone
+	function style(feature) {
+    return {
+        fillColor: 'gray',
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.5
+    };
+	}
+	// display data when hovering
+	function highlightFeature(e) {
+        var layer = e.target;
+        layer.setStyle({
+            fillColor: 'green',
+            fillOpacity: 0.7
+        });
+        info.update(layer.feature.properties);
+    }
+    // de-green when mouseout
+    function unhighlightFeature(e) {
+        var layer = e.target;
+        layer.setStyle({
+            fillColor: 'gray',
+            fillOpacity: 0.3
+        });
+        info.update(layer.feature.properties);
+    }
+
+	// create the empty arrays for display
+	var districtOne = [];
+	document.getElementById("district1").innerHTML = districtOne;
+
+	var districtTwo = [];
+	document.getElementById("district2").innerHTML = districtTwo;
+
+	var districtThree = [];
+	document.getElementById("district2").innerHTML = districtThree;
+
+	var districtFour = [];
+	document.getElementById("district2").innerHTML = districtFour;
+
+	var districtFive = [];
+	document.getElementById("district2").innerHTML = districtFive;
+
+	function chooseFeature(e) {
+		var layer = e.target;
+        var townName = layer.feature.properties.Town;
+        layer.setStyle({
+			fillColor: 'gray',
+			fillOpacity: 0.7
+		});
+
+	    alert("got a click");	
+
+		if (document.getElementById('D1').checked){//(districts.District[4].checked = true){
+            
+            //if(districtOne.indexOf(' '+townName) < -1) {
+                alert("hi"); //town already added!" + districtOne.indexOf(' '+townName) );
+            //}  //$.inArray(townName,districtOne);
+			
+			districtOne.push(' '+townName);
+			document.getElementById("district1").innerHTML = districtOne;
+			layer.setStyle({
+                fillColor: '#FF0000',
+				fillOpacity: 0.7
+                });
+            //layer.addEventListener('click', function(e) {
+            //    alert(e.latlng);
+            //    });
+		
+		
+			/*
+			if (arIndex > -1){
+				districtOne.push(' '+arIndex);
+				districtOne.splice(arIndex,1);
+				document.getElementById("district1").innerHTML = districtOne;
+			}else{
+				districtOne.push(' '+townName);
+				document.getElementById("district1").innerHTML = districtOne;
+				layer.setStyle({
+					fillColor: '#FF0000',
+					fillOpacity: 0.7
+				});
+			}
+			*/
+
+		} else if (document.getElementById('D2').checked){//(districts.District[3].checked = true){ //do the same for D2, etc.
+			districtTwo.push(' '+layer.feature.properties.Town);
+			document.getElementById("district2").innerHTML = districtTwo;
+			layer.setStyle({
+				fillColor: '#0080FF',
+				fillOpacity: 0.7
+			});
+		} else if (document.getElementById('D3').checked){//(districts.District[3].checked = true){ //do the same for D2, etc.
+			districtThree.push(' '+layer.feature.properties.Town);
+			document.getElementById("district3").innerHTML = districtThree;
+			layer.setStyle({
+				fillColor: '#FFFF00',
+				fillOpacity: 0.7
+			});
+		} else if (document.getElementById('D4').checked){//(districts.District[3].checked = true){ //do the same for D2, etc.
+			districtFour.push(' '+layer.feature.properties.Town);
+			document.getElementById("district4").innerHTML = districtFour;
+			layer.setStyle({
+				fillColor: '#FF8000',
+				fillOpacity: 0.7
+			});
+		} else if (document.getElementById('D5').checked){//(districts.District[3].checked = true){ //do the same for D2, etc.
+			districtFive.push(' '+layer.feature.properties.Town);
+			document.getElementById("district5").innerHTML = districtFive;
+			layer.setStyle({
+				fillColor: '#FA58F4',
+				fillOpacity: 0.7
+			});
+        } else {
+            alert("please choose a district");
+			// error popup - make sure a radio button is checked
+		}
+		
+		// The addition assignment operator (+=) adds a value to a variable
+		if (layer.setStyle = true){
+			totalPop += layer.feature.properties.PopACS2013;
+			totalIncome += layer.feature.properties.IncACS2013;
+			totalTaxable += layer.feature.properties.ENGLY2012;
+		// calculates values per person
+			metroPerCapIncome = totalIncome/totalPop;
+			metroPerCapTaxable = totalTaxable/totalPop;
+	    }
+        //resetFeature(e);
+        //resetStyle(layer);
+
+        // updates display
+        info.update(layer.feature.properties);
+    }
+
+	// create ability to clear selections
+	function resetFeature(e){
+ 
+		var layer = e.target;
+        var townName = layer.feature.properties.Town;
+		layer.setStyle({
+			fillColor: 'gray',
+			fillOpacity: 0.9
+		});
+
+       //var layer = e.target;
+        //geojson.resetStyle(layer);
+		//totalPop -= layer.feature.properties.PopACS2013;
+		//totalIncome -= layer.feature.properties.IncACS2013;
+		//totalTaxable -= layer.feature.properties.ENGLY2012;
+		//metroPerCapIncome = totalIncome/totalPop;
+		//metroPerCapTaxable = totalTaxable/totalPop;
+
+>>>>>>> origin/master
+		info.update(layer.feature.properties);
+	}
+
+	// event listeners for hovering or clicking on town polygons
+	function onEachFeature(feature, layer) {
+<<<<<<< HEAD
+		layer.on({
+			mouseover: highlightFeature,
+			click: chooseFeature,
+			dblclick: resetFeature
+		});
+=======
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: unhighlightFeature,
+        click: chooseFeature,
+		//dblclick: resetFeature
+    });
+>>>>>>> origin/master
+	}
+
+	// set up the town map overlay
+	geojson = L.geoJson(data, {
+		style: style,
+		onEachFeature: onEachFeature
+	}).addTo(map);
+
+	// set up the info window
+	var info = L.control( {position: 'bottomleft'} ); // places info box over Long Island
+	info.onAdd = function (map) {
+<<<<<<< HEAD
+		this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+		this.update();
+		return this._div;
+=======
+        this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+        this.update();
+        return this._div;
+>>>>>>> origin/master
+	};
+	
+	// update the control info window based on feature properties passed
+	info.update = function (props) {
+		var winName =
+<<<<<<< HEAD
+		this._div.innerHTML =
+		'<h4>Click to merge towns<br /></h4>' +
+		(props ? '<b>' + props.Town + '</b>' + '<br />' + 
+		comma(props.Total_pop) + ' People' + '<br />' + '<br />'+
+		numberWithCommas(props.VR_tot_10) + ' Voters Registered' + '<br />' +
+		comma(props.VR_R_10) + ' Republicans' + '<br />' +
+		comma(props.VR_D_10) + ' Democrats' + '<br />' +
+		comma(props.VR_Un_10) + ' Unaffiliated' + '<br />' +
+		numberWithCommas(props.VR_nR_10) + ' Net Republicans' + '<br />' +
+		Number(100*props.VR_R_10/props.VR_tot_10).toFixed(2) + ' % Republicans' + '<br />' + 
+		Number(100*props.VR_D_10/props.VR_tot_10).toFixed(2) + ' % Democrats' + '<br />' +
+		Number(100*props.VR_Un_10/props.VR_tot_10).toFixed(2) + ' % Unaffiliated' + '<br />' +
+		Number(100*props.VR_nR_10/props.VR_tot_10).toFixed(2) +' % Net Republicans' + '<br />' +'<br />'+
+		
+		numberWithCommas(props.G_tot_10) + ' Gubernatorial Votes' + '<br />' +
+		comma(props.G_R_10) + ' Gubernatorial Republicans' + '<br />' +
+		comma(props.G_D_10) + ' Gubernatorial Democrats' + '<br />' +
+		numberWithCommas(props.G_nR_10) + ' Gubernat. Net Republicans' + '<br />' +
+		Number(100*props.G_R_10/props.G_tot_10).toFixed(2) + ' % Gubernat. Republicans' + '<br />' + 
+		Number(100*props.G_D_10/props.G_tot_10).toFixed(2) + ' % Gubernat. Democrats' + '<br />' +
+		Number(100*props.G_nR_10/props.G_tot_10).toFixed(2) + ' % Gubernat. Net Republicans' + '<br />' +'<br />'+
+		
+		numberWithCommas(props.Pop_18) + ' People 18 years and over' + '<br />' +
+		numberWithCommas(props.Black_18) + ' Black or African American' + '<br />' +
+		numberWithCommas(props.Hisp_18) + ' Hispanic' + '<br />' +
+		numberWithCommas(props.White_18) + ' White' + '<br />' +
+		numberWithCommas(props.Non_W_18) + ' Non-White' + '<br />' +
+		Number(100*props.Non_W_18/props.Pop_18).toFixed(2) +  ' % Non-White'  + '<br /><b>' : 'Hover over a town');
+=======
+  	    this._div.innerHTML =
+		'<h4>Click to merge Connecticut towns into<br />a hypothetical metropolitan region:</h4>' +
+		(props ? '<b>' + props.Town + '</b>' + '<br />' +
+		comma(props.PopACS2013) + ' people' + '<br />$' +
+		comma(props.IncACS2013/props.PopACS2013) + ' income per capita' + '<br />$' +
+		comma(props.ENGLY2012/props.PopACS2013) + ' taxable property per capita' + '<br /><b>' +
+		'Merged region (2012-13 data)' + '</b><br />' +
+		(props ? comma(checkNull(totalPop,false)) : '---') + ' people' + '<br />$' +
+		(props ? comma(checkNull(metroPerCapIncome,false)) : '---') + ' income per capita' + '<br />$' +
+		(props ? comma(checkNull(metroPerCapTaxable,false)) : '---') + ' taxable property per capita': 'Hover over a town');
+>>>>>>> origin/master
+	};
+	info.addTo(map);
+	// functions from @alvinschang at CT Mirror to display data in info window
+	function checkNull(val,pct) {
+		if (val > -99999999999) {
+			if (pct) {
+				return val = Math.round(val*10)/10 + "%";
+			} else {
+				return val = Math.round(val*10)/10;
+			}
+		} else {
+			return "No data";
+		}
+	}
+	function checkThePct(a) {
+	  if (a > -1) {
+	    return Math.round(a*1000)/10 + "%";
+	  } else {
+	    return "--";
+	  }
+	}
+	function comma(val){
+	  num = val;
+	  val = Math.round(val);
+	  while (/(\d+)(\d{3})/.test(val.toString())){
+	    val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+	  }
+	  if (val == "-") {
+	    return val;
+	  } else if (num < 0) {
+	    return "(" + val.replace("-","")+")";
+	  } else {
+	    return "" + val;
+	  }
+	}
+	function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+</script>
+</body>
+</html>
