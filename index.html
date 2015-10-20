@@ -4,8 +4,6 @@
 	<title>MetroMerger</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- Load jQuery from Google CDN-->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<!-- Load Leaflet from CDN-->
 	<script src="http://cdn.jsdelivr.net/leaflet/0.7.3/leaflet.js"></script>
 	<link rel="stylesheet" href="http://cdn.jsdelivr.net/leaflet/0.7.3/leaflet.css" />
@@ -35,11 +33,10 @@
 	#accordion .ui-accordion-content { padding: 15px;}
 	</style>
 </head>
-<<<<<<< HEAD
 <body style='font: 14px/16px Arial, Helvetica, sans-serif'>
 	<div id="map" style="position:absolute;top:0px;left:0px;"></div>
 
-	<div id="accordion" style="position:absolute;top:1%;right:1%;width:23%;font: 14px/16px Arial, Helvetica, sans-serif">
+	<div id="accordion" style="position:absolute;top:10px;left:950px;width:300px;font: 14px/16px Arial, Helvetica, sans-serif">
 	  <h3 id="district1_title">District 1</h3>
 	  <div>
 		<div id="district1_text" class="merged_stats">No towns selected</div>
@@ -71,29 +68,7 @@
 
 <script type="text/javascript">
 
-	var map = L.map('map',{doubleClickZoom: false}).setView([41.5, -72.67], 9);
-=======
-<body>
-	<div id="map"></div>
-	<form id = "districts">
-	<input type="radio" name="District" id="D1"/>District 1<br>
-	<input type="radio" name="District" id="D2"/>District 2<br>
-	<input type="radio" name="District" id="D3"/>District 3<br>
-	<input type="radio" name="District" id="D4"/>District 4<br>
-	<input type="radio" name="District" id="D5"/>District 5<br>
-	</form>
-	<p id="district1"></p>
-	<p id="district2"></p>
-	<p id="district3"></p>
-	<p id="district4"></p>
-	<p id="district5"></p>
- 
-	</input>
-	</form>
-
-<script type="text/javascript">
-    var map = L.map('map',{doubleClickZoom: false}).setView([41.5, -72.67], 9);
->>>>>>> origin/master
+	var map = L.map('map').setView([41.5, -72.67], 9);
 	// customize source link to your GitHub repo
 	map.attributionControl
 	.setPrefix('<a href="http://magic.lib.uconn.edu/">MAGIC</a>  created with <a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
@@ -106,7 +81,6 @@
 	var totalTaxable = 0;
 	var metroPerCapIncome = 0;
 	var metroPerCapTaxable = 0;
-<<<<<<< HEAD
 
 	var vr_r_10 = 0; // Voters Registered as Republicans in 2010
 	var vr_d_10 = 0; // Voters Registered as Democrats in 2010
@@ -393,182 +367,16 @@
 		non_w_18 -= layer.feature.properties.Non_W_18; // Voting Age Non-White Population (2010 Census)
 		non_w_18p = 100*non_w_18/pop_18; // Voting Age Non-White Population (Percent) in 2010
 		
-=======
-	// style the initial map in gray tone
-	function style(feature) {
-    return {
-        fillColor: 'gray',
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.5
-    };
-	}
-	// display data when hovering
-	function highlightFeature(e) {
-        var layer = e.target;
-        layer.setStyle({
-            fillColor: 'green',
-            fillOpacity: 0.7
-        });
-        info.update(layer.feature.properties);
-    }
-    // de-green when mouseout
-    function unhighlightFeature(e) {
-        var layer = e.target;
-        layer.setStyle({
-            fillColor: 'gray',
-            fillOpacity: 0.3
-        });
-        info.update(layer.feature.properties);
-    }
-
-	// create the empty arrays for display
-	var districtOne = [];
-	document.getElementById("district1").innerHTML = districtOne;
-
-	var districtTwo = [];
-	document.getElementById("district2").innerHTML = districtTwo;
-
-	var districtThree = [];
-	document.getElementById("district2").innerHTML = districtThree;
-
-	var districtFour = [];
-	document.getElementById("district2").innerHTML = districtFour;
-
-	var districtFive = [];
-	document.getElementById("district2").innerHTML = districtFive;
-
-	function chooseFeature(e) {
-		var layer = e.target;
-        var townName = layer.feature.properties.Town;
-        layer.setStyle({
-			fillColor: 'gray',
-			fillOpacity: 0.7
-		});
-
-	    alert("got a click");	
-
-		if (document.getElementById('D1').checked){//(districts.District[4].checked = true){
-            
-            //if(districtOne.indexOf(' '+townName) < -1) {
-                alert("hi"); //town already added!" + districtOne.indexOf(' '+townName) );
-            //}  //$.inArray(townName,districtOne);
-			
-			districtOne.push(' '+townName);
-			document.getElementById("district1").innerHTML = districtOne;
-			layer.setStyle({
-                fillColor: '#FF0000',
-				fillOpacity: 0.7
-                });
-            //layer.addEventListener('click', function(e) {
-            //    alert(e.latlng);
-            //    });
-		
-		
-			/*
-			if (arIndex > -1){
-				districtOne.push(' '+arIndex);
-				districtOne.splice(arIndex,1);
-				document.getElementById("district1").innerHTML = districtOne;
-			}else{
-				districtOne.push(' '+townName);
-				document.getElementById("district1").innerHTML = districtOne;
-				layer.setStyle({
-					fillColor: '#FF0000',
-					fillOpacity: 0.7
-				});
-			}
-			*/
-
-		} else if (document.getElementById('D2').checked){//(districts.District[3].checked = true){ //do the same for D2, etc.
-			districtTwo.push(' '+layer.feature.properties.Town);
-			document.getElementById("district2").innerHTML = districtTwo;
-			layer.setStyle({
-				fillColor: '#0080FF',
-				fillOpacity: 0.7
-			});
-		} else if (document.getElementById('D3').checked){//(districts.District[3].checked = true){ //do the same for D2, etc.
-			districtThree.push(' '+layer.feature.properties.Town);
-			document.getElementById("district3").innerHTML = districtThree;
-			layer.setStyle({
-				fillColor: '#FFFF00',
-				fillOpacity: 0.7
-			});
-		} else if (document.getElementById('D4').checked){//(districts.District[3].checked = true){ //do the same for D2, etc.
-			districtFour.push(' '+layer.feature.properties.Town);
-			document.getElementById("district4").innerHTML = districtFour;
-			layer.setStyle({
-				fillColor: '#FF8000',
-				fillOpacity: 0.7
-			});
-		} else if (document.getElementById('D5').checked){//(districts.District[3].checked = true){ //do the same for D2, etc.
-			districtFive.push(' '+layer.feature.properties.Town);
-			document.getElementById("district5").innerHTML = districtFive;
-			layer.setStyle({
-				fillColor: '#FA58F4',
-				fillOpacity: 0.7
-			});
-        } else {
-            alert("please choose a district");
-			// error popup - make sure a radio button is checked
-		}
-		
-		// The addition assignment operator (+=) adds a value to a variable
-		if (layer.setStyle = true){
-			totalPop += layer.feature.properties.PopACS2013;
-			totalIncome += layer.feature.properties.IncACS2013;
-			totalTaxable += layer.feature.properties.ENGLY2012;
-		// calculates values per person
-			metroPerCapIncome = totalIncome/totalPop;
-			metroPerCapTaxable = totalTaxable/totalPop;
-	    }
-        //resetFeature(e);
-        //resetStyle(layer);
-
-        // updates display
-        info.update(layer.feature.properties);
-    }
-
-	// create ability to clear selections
-	function resetFeature(e){
- 
-		var layer = e.target;
-        var townName = layer.feature.properties.Town;
-		layer.setStyle({
-			fillColor: 'gray',
-			fillOpacity: 0.9
-		});
-
-       //var layer = e.target;
-        //geojson.resetStyle(layer);
-		//totalPop -= layer.feature.properties.PopACS2013;
-		//totalIncome -= layer.feature.properties.IncACS2013;
-		//totalTaxable -= layer.feature.properties.ENGLY2012;
-		//metroPerCapIncome = totalIncome/totalPop;
-		//metroPerCapTaxable = totalTaxable/totalPop;
-
->>>>>>> origin/master
 		info.update(layer.feature.properties);
 	}
 
 	// event listeners for hovering or clicking on town polygons
 	function onEachFeature(feature, layer) {
-<<<<<<< HEAD
 		layer.on({
 			mouseover: highlightFeature,
 			click: chooseFeature,
 			dblclick: resetFeature
 		});
-=======
-    layer.on({
-        mouseover: highlightFeature,
-        mouseout: unhighlightFeature,
-        click: chooseFeature,
-		//dblclick: resetFeature
-    });
->>>>>>> origin/master
 	}
 
 	// set up the town map overlay
@@ -580,21 +388,14 @@
 	// set up the info window
 	var info = L.control( {position: 'bottomleft'} ); // places info box over Long Island
 	info.onAdd = function (map) {
-<<<<<<< HEAD
 		this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
 		this.update();
 		return this._div;
-=======
-        this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-        this.update();
-        return this._div;
->>>>>>> origin/master
 	};
 	
 	// update the control info window based on feature properties passed
 	info.update = function (props) {
 		var winName =
-<<<<<<< HEAD
 		this._div.innerHTML =
 		'<h4>Click to merge towns<br /></h4>' +
 		(props ? '<b>' + props.Town + '</b>' + '<br />' + 
@@ -623,18 +424,6 @@
 		numberWithCommas(props.White_18) + ' White' + '<br />' +
 		numberWithCommas(props.Non_W_18) + ' Non-White' + '<br />' +
 		Number(100*props.Non_W_18/props.Pop_18).toFixed(2) +  ' % Non-White'  + '<br /><b>' : 'Hover over a town');
-=======
-  	    this._div.innerHTML =
-		'<h4>Click to merge Connecticut towns into<br />a hypothetical metropolitan region:</h4>' +
-		(props ? '<b>' + props.Town + '</b>' + '<br />' +
-		comma(props.PopACS2013) + ' people' + '<br />$' +
-		comma(props.IncACS2013/props.PopACS2013) + ' income per capita' + '<br />$' +
-		comma(props.ENGLY2012/props.PopACS2013) + ' taxable property per capita' + '<br /><b>' +
-		'Merged region (2012-13 data)' + '</b><br />' +
-		(props ? comma(checkNull(totalPop,false)) : '---') + ' people' + '<br />$' +
-		(props ? comma(checkNull(metroPerCapIncome,false)) : '---') + ' income per capita' + '<br />$' +
-		(props ? comma(checkNull(metroPerCapTaxable,false)) : '---') + ' taxable property per capita': 'Hover over a town');
->>>>>>> origin/master
 	};
 	info.addTo(map);
 	// functions from @alvinschang at CT Mirror to display data in info window
